@@ -122,7 +122,7 @@ npm run dev    # 同时起 server(:4321) 和 vite(:5173)，浏览器开 5173
 测试与验证：
 
 ```bash
-npm test                      # 后端集成测试（v0.1~v1.1 共 59 项）
+npm test                      # 后端集成测试（v0.1~v1.1 + 路径穿越回归，共 86 项）
 cd app/web && npm run build   # 前端类型检查 + 生产构建
 ```
 
@@ -173,6 +173,7 @@ React SPA ──/api/*──▶ Express ──▶ SQLite 单文件 (app/data/jia
 
 - Markdown 渲染经 DOMPurify 消毒；SQL 全参数化；附件服务防路径穿越、非图片 MIME 强制下载 + nosniff；项目无任何硬编码凭据。
 - **无鉴权**，仅限本机/可信内网使用；如需暴露公网，请套反代加 BasicAuth/IP 白名单。
+- 路径穿越有四层防护：上传文件名经 `sanitizeFileName` 剥离分隔符、入库名恒带服务端生成的 `YYYYMM/<随机hex>-` 前缀、`/files/*` 与导出 ZIP 均 `resolve` 后校验仍位于附件根目录内、备份名走 `BACKUP_NAME_RE` 白名单。以上均由 `app/server/test/path-traversal.test.mjs` 以攻击者视角回归覆盖（含「附件根目录之外放金丝雀、强制孤儿清理后仍须完好」的越界删除断言）。
 
 ## 路线图
 

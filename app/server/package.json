@@ -8,7 +8,7 @@
   "scripts": {
     "dev": "node --watch index.js",
     "start": "node index.js",
-    "test": "node --test test/api.test.mjs test/v02.test.mjs test/migration.test.mjs test/v03.test.mjs test/v04.test.mjs test/v05.test.mjs test/v06.test.mjs test/v07.test.mjs test/v08.test.mjs test/v10.test.mjs test/v11.test.mjs"
+    "test": "node --test test/api.test.mjs test/v02.test.mjs test/migration.test.mjs test/v03.test.mjs test/v04.test.mjs test/v05.test.mjs test/v06.test.mjs test/v07.test.mjs test/v08.test.mjs test/v10.test.mjs test/v11.test.mjs test/path-traversal.test.mjs"
   },
   "dependencies": {
     "better-sqlite3": "^13.0.3",
