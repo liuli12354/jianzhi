@@ -113,6 +113,27 @@ node app/server/scripts/seed.mjs
 
 > ⚠️ **不要直接双击 `app/web/index.html`**（或 `app/web/dist/index.html`）。它是前端源码入口，必须由 Vite 编译、由后端托管才能运行，用 `file://` 打开只会白屏。原因见下方「为什么不能双击 index.html」。
 
+### 安装依赖时遇到 node-gyp / Visual Studio 报错？
+
+个别机器上 `npm run setup` 会失败，报：
+
+```
+gyp ERR! find VS  Could not find any Visual Studio installation to use
+npm error path .../node_modules/better-sqlite3
+```
+
+**这不是项目缺东西，而是一次多余的编译尝试**：`better-sqlite3` 官方包自带全平台预编译产物（包元数据为 `gypfile: false` 且没有 install 脚本，`prebuilds/` 内含 `win32-x64.node` 等），**本来不需要编译**；但部分 npm 版本仍会对它触发一次 `node-gyp rebuild`，而 Windows 上编译需要 Visual Studio Build Tools，于是中断。
+
+绕过办法 —— 直接使用自带的预编译产物，功能完全一致：
+
+```bash
+npm install
+npm --prefix app/server install --ignore-scripts
+npm --prefix app/web install
+```
+
+验证是否正常：`npm test` 应输出 **86 项全部通过**。若坚持走编译路线，则需安装 Visual Studio Build Tools（体积数 GB，通常没必要）。
+
 开发模式（前端热更新，/api 自动代理到 4321）：
 
 ```bash
