@@ -20,8 +20,12 @@ before(async () => {
   base = `http://127.0.0.1:${server.address().port}/api`
 })
 
-after(() => {
+after(async () => {
   server.close()
+  // better-sqlite3 句柄不关闭时，Windows 会以 EBUSY 拒绝删除数据目录
+  const { db } = await import('../src/db.js')
+  try { db.close() } catch { /* 已关闭则忽略 */ }
+  try { fs.rmSync(process.env.DATA_DIR, { recursive: true, force: true }) } catch { /* 忽略清理失败 */ }
 })
 
 const get = async (p) => {

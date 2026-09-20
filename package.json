@@ -4,7 +4,7 @@
   "private": true,
   "description": "简知 —— 轻量级个人知识库（调研驱动自研）",
   "scripts": {
-    "setup": "npm --prefix app/server install && npm --prefix app/web install",
+    "setup": "npm --prefix app/server install --ignore-scripts && npm --prefix app/web install",
     "dev": "concurrently -n server,web -c blue,green \"npm --prefix app/server run dev\" \"npm --prefix app/web run dev\"",
     "build": "npm --prefix app/web run build",
     "start": "npm --prefix app/server run start",

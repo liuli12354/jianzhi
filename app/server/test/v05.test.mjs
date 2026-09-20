@@ -20,7 +20,13 @@ before(async () => {
   base = `http://127.0.0.1:${server.address().port}/api`
 })
 
-after(() => { server?.close() })
+after(async () => {
+  server?.close()
+  // better-sqlite3 句柄不关闭时，Windows 会以 EBUSY 拒绝删除数据目录
+  const { db } = await import('../src/db.js')
+  try { db.close() } catch { /* 已关闭则忽略 */ }
+  try { fs.rmSync(process.env.DATA_DIR, { recursive: true, force: true }) } catch { /* 忽略清理失败 */ }
+})
 
 const get = (url) => fetch(base + url)
 const post = (url, body) => fetch(base + url, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) })
@@ -68,6 +74,7 @@ test('随机漫游：空库返回 null（子进程使用独立数据目录）', 
   assert.equal(r.status, 0, `子进程失败：${r.stderr}`)
   const { note } = JSON.parse(r.stdout.trim().split('\n').pop())
   assert.equal(note, null)
+  try { fs.rmSync(dir, { recursive: true, force: true }) } catch { /* 忽略清理失败 */ }
 })
 
 test('反链整段上下文：±3 行窗口且剔除首尾空行', async () => {

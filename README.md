@@ -113,9 +113,11 @@ node app/server/scripts/seed.mjs
 
 > ⚠️ **不要直接双击 `app/web/index.html`**（或 `app/web/dist/index.html`）。它是前端源码入口，必须由 Vite 编译、由后端托管才能运行，用 `file://` 打开只会白屏。原因见下方「为什么不能双击 index.html」。
 
-### 安装依赖时遇到 node-gyp / Visual Studio 报错？
+### 关于 `npm run setup` 与 better-sqlite3 的编译
 
-**Windows 上这是必现的，不是个例** —— 只要仓库带着 `package-lock.json`（本仓库就有），`npm run setup` 安装 `better-sqlite3` 时就会触发一次 `node-gyp rebuild`；没有 Visual Studio Build Tools 就会中断：
+`npm run setup` **已内置规避**：server 依赖以 `--ignore-scripts` 安装，直接使用 `better-sqlite3` 自带的预编译产物，**因此不需要 Visual Studio 等任何构建工具链**。
+
+**若你绕过 `setup`、直接执行 `npm --prefix app/server install`**，则可能撞上：
 
 ```
 gyp ERR! find VS  Could not find any Visual Studio installation to use
@@ -126,17 +128,15 @@ npm error path .../node_modules/better-sqlite3
 
 | 是否带 lockfile | 结果 |
 |---|---|
-| 带（= 克隆下来的状态） | ❌ 触发编译，无 VS 时失败 |
+| 带（= 克隆下来的状态） | ❌ 触发一次多余的编译，无 VS 时失败 |
 | 不带 | ✅ 直接使用预编译产物，安装成功 |
 
 推断成因：npm 从 lockfile 取包元数据，而 lockfile 条目不记录 `gypfile` 字段，npm 便按「有 `binding.gyp` 就编译」处理（可对照 npm 源码 `@npmcli/arborist` 的 `rebuild.js`：`const isGyp = gypfile !== false && …`）。macOS / Linux 上同样会触发编译，但系统自带工具链、编译能通过，通常只表现为安装变慢，因此不易察觉。
 
-**绕过办法** —— 使用包内自带的预编译产物，功能完全一致：
+**直接安装时的解决** —— 加上 `--ignore-scripts` 即可，功能完全一致：
 
 ```bash
-npm install
 npm --prefix app/server install --ignore-scripts
-npm --prefix app/web install
 ```
 
 验证：`npm test` 应输出 **86 项全部通过**。若坚持走编译路线，则需安装 Visual Studio Build Tools（体积数 GB，通常没必要）。
