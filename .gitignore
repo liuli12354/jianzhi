@@ -1,0 +1,8 @@
+node_modules/
+dist/
+data/
+*.log
+.DS_Store
+
+# ZCode 工具状态（含本机绝对路径与会话 ID，不应入库）
+.mimosa/

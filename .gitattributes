@@ -1,0 +1,7 @@
+# 批处理必须保持 CRLF —— cmd.exe 无法解析 LF 换行的 .bat
+*.bat text eol=crlf
+
+# 二进制资源不做换行转换
+*.png binary
+*.bmp binary
+*.db  binary

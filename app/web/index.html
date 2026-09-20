@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📒</text></svg>" />
+    <title>简知 · 个人知识库</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script>
+      // 双击打开（file://）时，浏览器会以 CORS 拦截下面的 ES 模块，React 永远挂载不上，
+      // 页面只会停在空白。这里同步渲染一段可执行的指引，把白屏换成明确的下一步。
+      // 样式必须内联：file:// 下外链 CSS 同样会被 CORS 拦截。
+      if (location.protocol === 'file:') {
+        document.getElementById('root').innerHTML = `
+          <div style="max-width:600px;margin:12vh auto;padding:28px 32px;border-radius:14px;
+                      font:15px/1.75 -apple-system,'Segoe UI','Microsoft YaHei',sans-serif;
+                      color:#2c2c2c;background:#fff;border:1px solid #e6e6e6;
+                      box-shadow:0 6px 24px rgba(0,0,0,.08)">
+            <h1 style="margin:0 0 4px;font-size:19px">简知需要通过本地服务打开</h1>
+            <p style="margin:0 0 18px;color:#8a8a8a;font-size:13px">当前协议：file:// —— 这个页面不能直接双击运行</p>
+            <p style="margin:0 0 14px">你打开的是前端的<b>源码入口</b>（<code>app/web/index.html</code>）。它要先由 Vite 或后端服务编译、托管才能运行；浏览器不允许 file:// 页面加载 ES 模块，所以 React 无法启动，页面是空白的。</p>
+            <p style="margin:0 0 6px"><b>正确的打开方式</b>——在项目根目录执行：</p>
+            <pre style="margin:0 0 16px;padding:10px 14px;border-radius:8px;background:#f6f6f6;font-size:13px">npm start</pre>
+            <p style="margin:0 0 16px">然后访问 <a href="http://localhost:4321" style="color:#2f6feb">http://localhost:4321</a>（服务已在运行时，点这个链接就直接进）。</p>
+            <p style="margin:0;padding-top:14px;border-top:1px solid #eee;color:#8a8a8a;font-size:13px">
+              更省事的办法：双击项目根目录的 <code>简知.bat</code>，它会自动起服务并打开浏览器。<br>
+              笔记存在 <code>app/data/jianzhi.db</code>，由后端读写，因此这个页面无法脱离服务独立运行。
+            </p>
+          </div>`
+      }
+    </script>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
